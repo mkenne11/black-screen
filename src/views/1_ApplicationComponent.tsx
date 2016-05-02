@@ -1,5 +1,6 @@
 import SessionComponent from "./2_SessionComponent";
-import {TabComponent, TabProps, Tab} from "./TabComponent";
+// import {TabComponent, TabProps, Tab} from "./TabComponent";
+import {TabProps, Tab} from "./TabComponent2";
 import * as React from "react";
 import * as _ from "lodash";
 import Session from "../Session";
@@ -72,7 +73,7 @@ export default class ApplicationComponent extends React.Component<{}, State> {
             }
         }
 
-        if (event.metaKey && event.keyCode === KeyCode.T) {
+        if ((event.metaKey || event.ctrlKey) && event.keyCode === KeyCode.T) {
             if (this.tabs.length < 9) {
                 this.addTab();
                 this.setState({sessions: this.activeTab.sessions});
@@ -106,9 +107,31 @@ export default class ApplicationComponent extends React.Component<{}, State> {
     }
 
     render() {
-        let tabs: React.ReactElement<TabProps>[];
+        // let tabs: React.ReactElement<TabProps>[];
+        let tabProps: TabProps[];
 
         if (this.tabs.length > 1) {
+            tabProps = this.tabs.map((tab: Tab, index: number) => {
+                let aTabProp: TabProps = {
+                    isActive: index === this.activeTabIndex,
+                    activate: () => {
+                                this.activeTabIndex = index;
+                                this.setState({ sessions: this.activeTab.sessions });
+                              },
+                    position: index + 1,
+                };
+                return aTabProp;
+            });
+        }
+        let tabComponents = tabProps.map((aTabProps: TabProps, index: number) =>
+            <Tab isActive={aTabProps.isActive}
+                key={index}
+                position={index + 1}
+                activate={aTabProps.activate}>
+            </Tab>
+        );
+
+        /*if (this.tabs.length > 1) {
             tabs = this.tabs.map((tab: Tab, index: number) =>
                 <TabComponent isActive={index === this.activeTabIndex}
                               key={index}
@@ -119,8 +142,7 @@ export default class ApplicationComponent extends React.Component<{}, State> {
                               }}>
                 </TabComponent>
             );
-        }
-
+        }*/
         let sessions = this.state.sessions.map(session =>
             <SessionComponent session={session}
                               key={session.id}
@@ -132,9 +154,15 @@ export default class ApplicationComponent extends React.Component<{}, State> {
             </SessionComponent>
         );
 
-        return (
+        /*return (
             <div className="application" onKeyDownCapture={this.handleKeyDown.bind(this)}>
                 <ul className="tabs">{tabs}</ul>
+                <div className="active-tab-content">{sessions}</div>
+            </div>
+        );*/
+        return (
+            <div className="application" onKeyDownCapture={this.handleKeyDown.bind(this)}>
+                <ul className="tabs">{tabComponents}</ul>
                 <div className="active-tab-content">{sessions}</div>
             </div>
         );
