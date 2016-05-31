@@ -1,6 +1,6 @@
 import {Buffer, Status, Weight, Brightness} from "../../Enums";
 import {colors, panel as panelColor, background as backgroundColor} from "./colors";
-import {TabHoverState} from "../TabComponent";
+import {TabHoverState, editNameState} from "../TabComponent";
 import {darken, lighten, failurize} from "./functions";
 import {Attributes} from "../../Interfaces";
 import * as _ from "lodash";
@@ -330,6 +330,31 @@ export const tabClose = (hover: TabHoverState) => {
         }
     );
 };
+
+export const tabName = () => {
+    return {
+        paddingLeft: 5,
+        backgroundColor: "transparent",
+        color: colors.white,
+        borderColor: "transparent",
+        width: "45%",
+        borderStyle: "solid",
+        borderWidth: 1,
+    };
+};
+
+export const editName = (hoverEdit: boolean, isActive: boolean) => {
+    return Object.assign(
+        {},
+        icon,
+        {
+            width: "7%",
+            paddingLeft: 3,
+            fontSize: fontSize - 1,
+            color: (hoverEdit) ? colors.blue : colors.white,
+            cursor: (hoverEdit) ? "pointer" : "default",
+        });
+    };
 
 export const commandSign = {
     fontSize: fontSize + 3,

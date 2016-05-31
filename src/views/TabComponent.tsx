@@ -6,6 +6,11 @@ import ApplicationComponent from "./1_ApplicationComponent";
 import * as css from "./css/main";
 import {fontAwesome} from "./css/FontAwesome";
 
+export enum editNameState {
+    Read,
+    Edit
+}
+
 export interface TabProps {
     isActive: boolean;
     activate: () => void;
@@ -16,7 +21,8 @@ export interface TabProps {
 export enum TabHoverState {
     Nothing,
     Tab,
-    Close
+    Close,
+    Edit
 }
 
 interface TabState {
@@ -24,9 +30,36 @@ interface TabState {
 }
 
 export class TabComponent extends React.Component<TabProps, TabState> {
+
+    refs: {
+        [key: string]: (Element);
+        tabName: (HTMLInputElement);
+    };
+
     constructor() {
         super();
         this.state = {hover: TabHoverState.Nothing};
+    }
+
+    changeTabNameHandler(event: KeyboardEvent): KeyboardEvent {
+        let activeTabName = this.refs.tabName;
+        activeTabName.disabled = false;
+        activeTabName.style.textOverflow = "none";
+        activeTabName.title = "";
+        activeTabName.focus();
+        return event;
+    }
+
+    disableTabNameHandler(event: KeyboardEvent): KeyboardEvent {
+        let activeTabName = this.refs.tabName;
+        activeTabName.disabled = true;
+        activeTabName.style.textOverflow = "ellipsis";
+        if (activeTabName.offsetWidth < activeTabName.scrollWidth) {
+            activeTabName.title = activeTabName.value;
+        } else {
+            activeTabName.title = "";
+        }
+        return event;
     }
 
     render() {
@@ -41,6 +74,15 @@ export class TabComponent extends React.Component<TabProps, TabState> {
                   onMouseLeave={() => this.setState({hover: TabHoverState.Tab})}/>
             <span style={css.commandSign}>⌘</span>
             <span>{this.props.position}</span>
+            <input type="text" ref="tabName"
+                  style={css.tabName()}
+                  disabled="disabled"
+                  onBlur={this.disableTabNameHandler.bind(this)}/>
+            <span style={css.editName(this.state.hover === TabHoverState.Edit, this.props.isActive)}
+                  dangerouslySetInnerHTML={{__html: fontAwesome.edit}}
+                  onClick={this.changeTabNameHandler.bind(this)}
+                  onMouseEnter={() => this.setState({hover: TabHoverState.Edit})}
+                  onMouseLeave={() => this.setState({hover: TabHoverState.Tab})}/>
         </li>;
     }
 }

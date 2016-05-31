@@ -1,5 +1,5 @@
 import SessionComponent from "./2_SessionComponent";
-import {TabComponent, TabProps, Tab} from "./TabComponent";
+import {TabComponent, TabProps, Tab, editNameState} from "./TabComponent";
 import * as React from "react";
 import * as _ from "lodash";
 import Session from "../Session";
@@ -84,7 +84,7 @@ export default class ApplicationComponent extends React.Component<{}, State> {
             }
         }
 
-        if (event.metaKey && event.keyCode === KeyCode.T) {
+        if ((event.metaKey || event.ctrlKey) && event.keyCode === KeyCode.T) {
             if (this.tabs.length < 9) {
                 this.addTab();
                 this.setState({sessions: this.activeTab.sessions});
